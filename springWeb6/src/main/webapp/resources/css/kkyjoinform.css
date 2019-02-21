@@ -1,0 +1,26 @@
+@charset "UTF-8";
+
+
+
+.t{
+   border : ridge;
+   width : 80%;
+   margin: auto;
+}
+
+.t td {
+   border : 1px ridge;
+   margin-left: 10px;
+}
+
+.t th {
+   background-color : #A9A9A9;
+   border : 1px ridge #cccccc;
+}
+
+.d{
+   width: 900px; 
+   margin: 20px auto;
+}
+
+.jointitle {text-align: center;}

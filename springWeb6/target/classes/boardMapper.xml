@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 게시판 정보처리 SQL -->
+<mapper namespace="global.sesoc.web6.dao.BoardMapper">
+
+	<!-- 게시판 전체 글 선택 -->
+	<select id= "selectAll" resultType="Board">
+		select 
+			boardnum
+			, id
+			, title
+			, hits
+			, to_char(inputdate, 'yyyy-mm-dd') as inputdate
+			,(select count(*)from reply where reply.boardnum = board.boardnum) as repcnt
+		from 
+			Board 
+		where
+			upper(id) like upper('%'||#{searchText}||'%') 
+		order by boardnum desc
+	</select>
+	<!-- 게시판 글 저장 -->
+	<insert id= "insertBoard" parameterType="Board">
+		insert into Board (
+			boardnum
+			, id
+			, title
+			, content
+			<if test="originalfile != null and savedfile != null">
+			, originalfile
+			, savedfile
+			</if>
+		) 
+		values(
+			board_seq.nextval
+			,#{id}
+			, #{title}
+			, #{content}
+			<if test="originalfile != null and savedfile != null">
+			, #{originalfile}
+			, #{savedfile}
+			</if>
+		)
+	</insert>
+	<!-- 게시판 글 삭제 -->
+	<delete id="deleteBoard" parameterType="Board">
+		delete from board where boardnum = #{boardnum} and id = #{id}
+	</delete>
+	<!-- 게시글 하나 선택 -->
+	<select id="selectOne" parameterType="Board" resultType="Board">
+		select * from board where boardnum = #{boardnum}
+	</select>
+	<!-- 글 개수 -->
+	<select id="getTotal" parameterType= "string" resultType="int">
+	 	select count(*) from board 
+	 	where 
+	 		upper(id) like upper ('%'||#{searchText}||'%')
+	 		or upper(content) like upper ('%'||#{searchText}||'%')
+	 		or upper(title) like upper ('%'||#{searchText}||'%')
+	</select>
+	
+	<!-- 게시글 정보 업데이트 -->
+	<update id="updateBoard" parameterType="Board">
+		update
+			board
+		set
+			title = #{title}
+			, hits = #{hits}
+			, content = #{content}
+		where
+			boardnum = #{boardnum}
+	</update>
+	<!-- 게시글에 댓글달기 -->
+	<insert id="insertReply" parameterType="Reply">
+		insert into reply 
+			(replynum
+			,boardnum
+			, id
+			, text) 
+		values
+			(reply_seq.nextval
+			, #{boardnum}
+			, #{id}
+			, #{text})
+	</insert>
+	<!-- 게시글 댓글 출력하기 -->
+	<select id="selectReply" parameterType="integer" resultType="Reply">
+		select 
+			boardnum
+			, text
+			, id
+			, to_char(inputdate, 'yyyy-mm-dd') as inputdate
+		from 
+			reply 
+		where
+			boardnum = #{boardnum}
+		order by replynum desc
+	</select>
+	
+	<select id="countReply" resultType="ReplyCount">
+		select 
+			boardnum
+			, (select count(*)from reply where reply.boardnum = board.boardnum) as repcnt
+		from 
+			board
+		order by boardnum desc
+	</select>
+
+</mapper>

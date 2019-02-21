@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 회원정보처리 SQL -->
+<mapper namespace="global.sesoc.web6.dao.CustomerMapper">
+
+	<!-- 회원정보 저장 -->
+	<insert id="insertCustomer" parameterType="Customer">
+		insert into customer
+		values 
+			(#{custid}
+			, #{password}
+			, #{name}
+			, #{email}
+			, #{division}
+			, #{idno}
+			, #{address}) 
+	</insert>
+	<!-- 회원정보 검색 -->
+	<select id="searchCustomer" parameterType="string" resultType="Customer">
+		select 
+			* 
+		from 
+			customer 
+		where 
+			custid like #{searchId}
+	</select>
+	<!-- 회원정보 수정 -->
+	<update id = "updateCustomer" parameterType="Customer">
+		update 
+			customer 
+		set 
+			name = #{name}
+			, email = #{email}
+			, idno = #{idno}
+			, address = #{address}
+			<if test="password != null and password != ''">
+			, password = #{password} 
+			</if>
+		where 
+			custid like #{custid}
+	</update>
+</mapper>
